@@ -1,6 +1,5 @@
-<<<<<<< HEAD
-# skyline-vows
-=======
+
+
 # Skyline Vows
 
 A browser-based 2D night-climbing game. Two climbers in sleek black outfits scale an impossibly tall skyscraper through rain, wind, birds, cranes and searchlights — and at the rooftop, one of them kneels with a question. Entirely fictional; inspired by a concept, not by any real people or events.
