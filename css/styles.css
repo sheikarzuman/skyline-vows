@@ -1,0 +1,205 @@
+/* ============================================================
+   Skyline Vows — stylesheet
+   Dark neon night theme. All in-game rendering is on canvas;
+   this file styles menus, HUD and touch controls.
+   ============================================================ */
+
+:root {
+  --bg: #0a0d18;
+  --panel: rgba(14, 18, 34, 0.92);
+  --ink: #e8ecff;
+  --dim: #8b93b8;
+  --neon: #ff4d8d;      /* protagonist accent  */
+  --neon2: #39d7ff;     /* partner accent      */
+  --gold: #ffd166;
+  --danger: #ff5c5c;
+  --radius: 14px;
+  --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  touch-action: none;               /* stop mobile scroll/zoom gestures */
+  -webkit-user-select: none; user-select: none;
+}
+
+#game { position: fixed; inset: 0; display: block; }
+
+.hidden { display: none !important; }
+
+/* ---------------- Screens (menus / overlays) ---------------- */
+.screen {
+  position: fixed; inset: 0; z-index: 30;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 14px; padding: 24px; text-align: center;
+  background: radial-gradient(ellipse at 50% 30%, rgba(20,28,58,.92), rgba(6,8,16,.97));
+  backdrop-filter: blur(3px);
+}
+.screen.overlay { background: rgba(6, 8, 16, 0.72); }
+
+.screen h1 {
+  font-size: clamp(2.4rem, 8vw, 4.4rem);
+  letter-spacing: .35em; font-weight: 800;
+  text-shadow: 0 0 18px rgba(255, 77, 141, .55), 0 0 60px rgba(57, 215, 255, .25);
+}
+.screen h1 span { color: var(--neon); display: block; font-size: .55em; letter-spacing: .8em; margin-top: 4px; }
+.screen h1.gold { color: var(--gold); text-shadow: 0 0 24px rgba(255, 209, 102, .6); }
+.screen h2 { font-size: 1.8rem; letter-spacing: .18em; }
+.tag  { color: var(--dim); line-height: 1.5; }
+.foot { color: var(--dim); font-size: .75rem; margin-top: 18px; opacity: .7; }
+.hint { max-width: 560px; color: var(--dim); line-height: 1.55; font-size: .9rem; }
+.row  { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.cols { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; text-align: left; }
+.cols h3 { color: var(--neon2); margin-bottom: 8px; letter-spacing: .12em; }
+.cols p  { margin: 4px 0; color: var(--ink); font-size: .95rem; }
+.dim { color: var(--dim); }
+
+/* ---------------- Buttons ---------------- */
+button {
+  font-family: var(--font); font-size: 1rem; font-weight: 600;
+  letter-spacing: .1em; color: var(--ink);
+  background: var(--panel);
+  border: 1px solid rgba(140, 160, 255, .25);
+  border-radius: var(--radius);
+  padding: 12px 34px; min-width: 210px;
+  cursor: pointer; transition: transform .12s, box-shadow .12s, border-color .12s;
+}
+button:hover, button:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--neon);
+  box-shadow: 0 0 18px rgba(255, 77, 141, .35);
+  outline: none;
+}
+button.primary {
+  background: linear-gradient(135deg, #ff4d8d, #b0327a);
+  border-color: transparent;
+  box-shadow: 0 4px 22px rgba(255, 77, 141, .35);
+}
+button.big { font-size: 1.15rem; padding: 16px 40px; }
+
+/* ---------------- HUD ---------------- */
+#hud { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
+#hud .hud-left {
+  position: absolute; top: 14px; left: 16px;
+  text-shadow: 0 2px 6px rgba(0,0,0,.8);
+}
+.hud-big { font-size: 1.7rem; font-weight: 800; letter-spacing: .05em; }
+#timer  { color: var(--dim); font-variant-numeric: tabular-nums; }
+
+#hud .hud-right { position: absolute; top: 14px; right: 64px; width: min(200px, 34vw); }
+#hud label { font-size: .6rem; letter-spacing: .25em; color: var(--dim); }
+.bar {
+  height: 10px; margin: 3px 0 8px;
+  background: rgba(255,255,255,.08);
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.fill { height: 100%; width: 100%; border-radius: 6px; transition: width .12s linear; }
+.fill.stamina  { background: linear-gradient(90deg, #35e0a1, #b8ff6e); }
+.fill.stamina.low { background: linear-gradient(90deg, #ff5c5c, #ff9a5c); }
+.fill.progress { background: linear-gradient(90deg, var(--neon2), var(--neon)); width: 0%; }
+
+#btnPause {
+  position: absolute; top: 12px; right: 12px;
+  min-width: 0; width: 40px; height: 40px; padding: 0;
+  pointer-events: auto; font-size: .8rem;
+}
+
+/* ---------------- Stage banner / dialogue ---------------- */
+#banner {
+  position: fixed; top: 18%; left: 50%; transform: translateX(-50%);
+  z-index: 25; pointer-events: none;
+  font-size: clamp(1.2rem, 4vw, 2rem); font-weight: 800; letter-spacing: .3em;
+  color: var(--ink); text-shadow: 0 0 16px var(--neon2);
+  animation: bannerIn 2.6s ease forwards;
+  white-space: nowrap;
+}
+@keyframes bannerIn {
+  0%   { opacity: 0; transform: translateX(-50%) translateY(14px); }
+  15%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+#dialogue {
+  position: fixed; bottom: 16%; left: 50%; transform: translateX(-50%);
+  z-index: 25; pointer-events: none;
+  max-width: min(620px, 88vw);
+  background: var(--panel); border: 1px solid rgba(140,160,255,.25);
+  border-radius: var(--radius); padding: 14px 22px;
+  font-size: 1.05rem; line-height: 1.5; text-align: center;
+}
+
+#proposalText { font-size: clamp(1.1rem, 3.4vw, 1.5rem); line-height: 1.7; }
+#proposalText b { color: var(--gold); }
+
+/* Fade layer for respawns / transitions */
+#fade {
+  position: fixed; inset: 0; z-index: 28; pointer-events: none;
+  background: #000; opacity: 0; transition: opacity .35s ease;
+}
+
+/* ---------------- Credits ---------------- */
+.creditScroll { max-height: 60vh; overflow: hidden; }
+.creditScroll > * { margin: 12px 0; animation: creditsUp 14s linear; }
+@keyframes creditsUp { from { transform: translateY(40vh); } to { transform: translateY(0); } }
+
+/* ---------------- Touch controls ---------------- */
+#touch { position: fixed; inset: 0; z-index: 22; pointer-events: none; }
+#joyZone {
+  position: absolute; left: 0; bottom: 0;
+  width: 45%; height: 55%;
+  pointer-events: auto;
+}
+#joyBase {
+  position: absolute; left: 34px; bottom: 34px;
+  width: 110px; height: 110px; border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  border: 2px solid rgba(255,255,255,.18);
+}
+#joyKnob {
+  position: absolute; left: 50%; top: 50%;
+  width: 48px; height: 48px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 77, 141, .5);
+  border: 2px solid rgba(255,255,255,.4);
+}
+#touchBtns {
+  position: absolute; right: 22px; bottom: 30px;
+  display: flex; gap: 16px; align-items: flex-end;
+  pointer-events: auto;
+}
+.tbtn {
+  min-width: 0; width: 76px; height: 76px; border-radius: 50%;
+  font-size: .75rem; letter-spacing: .08em; padding: 0;
+  background: rgba(57, 215, 255, .16); border-color: rgba(57,215,255,.4);
+}
+.tbtn.jump { width: 92px; height: 92px; background: rgba(255, 77, 141, .2); border-color: rgba(255,77,141,.5); }
+
+/* stage-select buttons in the main menu */
+.row.stages { gap: 8px; }
+.sbtn { min-width: 0; width: 46px; height: 46px; padding: 0; border-radius: 10px; font-size: 1rem; }
+.sbtn.ending { color: var(--neon); border-color: rgba(255,77,141,.5); }
+.tbtn:active { transform: scale(.92); }
+
+/* ---------------- Rotate hint (small portrait screens) ---------------- */
+#rotateHint {
+  position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
+  z-index: 40; padding: 8px 18px; border-radius: 20px;
+  background: var(--panel); border: 1px solid rgba(140,160,255,.3);
+  font-size: .8rem; color: var(--dim);
+}
+
+@media (max-width: 560px) {
+  .cols { gap: 18px; }
+  button { min-width: 170px; padding: 11px 20px; }
+  #hud .hud-right { right: 58px; }
+  .hud-big { font-size: 1.3rem; }
+}

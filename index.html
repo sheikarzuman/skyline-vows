@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="description" content="Skyline Vows — a 2D night-climbing game. Scale the tower, dodge the city, answer the question at the top.">
+<title>Skyline Vows</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<!-- Game canvas (everything in-world is drawn here) -->
+<canvas id="game"></canvas>
+
+<!-- ===================== HUD ===================== -->
+<div id="hud" class="hidden">
+  <div class="hud-left">
+    <div id="height" class="hud-big">0 m</div>
+    <div id="timer">00:00</div>
+  </div>
+  <div class="hud-right">
+    <label>STAMINA</label>
+    <div class="bar"><div id="stamina" class="fill stamina"></div></div>
+    <label>PROGRESS</label>
+    <div class="bar"><div id="progress" class="fill progress"></div></div>
+  </div>
+  <button id="btnPause" title="Pause">&#10074;&#10074;</button>
+</div>
+
+<!-- Stage banner + cinematic dialogue -->
+<div id="banner" class="hidden"></div>
+<div id="dialogue" class="hidden"></div>
+<div id="fade"></div>
+
+<!-- ===================== Main menu ===================== -->
+<div id="menu" class="screen">
+  <h1>SKYLINE<span>VOWS</span></h1>
+  <p class="tag">Two climbers in black. One impossible tower.<br>One question waiting at the top.</p>
+  <button id="btnStart" class="primary">Start Climb</button>
+  <div class="row stages" id="stageSelect">
+    <button data-stage="1" class="sbtn">1</button>
+    <button data-stage="2" class="sbtn">2</button>
+    <button data-stage="3" class="sbtn">3</button>
+    <button data-stage="4" class="sbtn">4</button>
+    <button data-stage="5" class="sbtn">5</button>
+    <button data-stage="6" class="sbtn">6</button>
+    <button id="btnEnding" class="sbtn ending" title="Skip to the ending">&#10084;</button>
+  </div>
+  <p class="foot" style="margin-top:0">Start from a stage &middot; <b>N</b> skips a stage in-game &middot; <b>E</b> jumps to the ending</p>
+  <button id="btnHow">Instructions</button>
+  <button id="btnSound">Sound: ON</button>
+  <p class="foot">A fictional story. No buildings were harmed.</p>
+</div>
+
+<!-- ===================== Instructions ===================== -->
+<div id="howto" class="screen hidden">
+  <h2>How to climb</h2>
+  <div class="cols">
+    <div>
+      <h3>Keyboard</h3>
+      <p><b>&larr; &rarr; / A D</b> — move</p>
+      <p><b>&uarr; &darr; / W S</b> — climb up / down on rails</p>
+      <p><b>Space / K</b> — jump &amp; wall-jump</p>
+      <p><b>Shift / J</b> — grab climbing rails</p>
+      <p><b>P / Esc</b> — pause</p>
+    </div>
+    <div>
+      <h3>Touch</h3>
+      <p><b>Left pad</b> — virtual joystick</p>
+      <p><b>JUMP</b> — jump &amp; wall-jump</p>
+      <p><b>GRAB</b> — hold to grip rails</p>
+    </div>
+  </div>
+  <p class="hint">Grabbing and climbing drains <b>stamina</b> — it refills when you stand on a ledge.
+  Watch for birds, debris, wind, spotlights and crumbling ledges. Checkpoints save your progress every stage.
+  Your partner climbs with you — he'll wait if you fall behind.</p>
+  <button id="btnBack" class="primary">Back</button>
+</div>
+
+<!-- ===================== Pause ===================== -->
+<div id="pause" class="screen hidden">
+  <h2>Paused</h2>
+  <button id="btnResume" class="primary">Resume</button>
+  <button id="btnRestart">Restart Climb</button>
+  <button id="btnSound2">Sound: ON</button>
+  <button id="btnQuit">Main Menu</button>
+</div>
+
+<!-- ===================== Proposal choice ===================== -->
+<div id="choice" class="screen overlay hidden">
+  <p id="proposalText">“We made it to the top of the world…<br>so I have one more question.<br><b>Will you marry me?</b>”</p>
+  <div class="row">
+    <button id="btnYes" class="primary big">Yes! &#10084;</button>
+    <button id="btnNo" class="big">Hmm… no.</button>
+  </div>
+</div>
+
+<!-- ===================== Endings ===================== -->
+<div id="credits" class="screen overlay hidden">
+  <div class="creditScroll">
+    <h1 class="gold">SHE SAID YES</h1>
+    <p>&#10022;</p>
+    <h2>SKYLINE VOWS</h2>
+    <p class="dim">a tiny climbing story</p>
+    <p><b>The Climber</b> — You</p>
+    <p><b>The Question-Asker</b> — A very patient AI</p>
+    <p><b>The Tower</b> — Itself</p>
+    <p><b>Birds, Debris &amp; Wind</b> — The City</p>
+    <p><b>Stunts</b> — Performed on a canvas. Do not try this on real buildings.</p>
+    <p class="dim">Thanks for climbing.</p>
+  </div>
+  <button id="btnAgain" class="primary">Climb Again</button>
+</div>
+
+<div id="funny" class="screen overlay hidden">
+  <h1>THE END?</h1>
+  <p id="funnyText">She walked away dramatically into the wind.<br>
+  He sat down. A pigeon adopted him.<br><br>
+  <b>He'll be fine. Probably.</b></p>
+  <button id="btnAgain2" class="primary">Climb Again</button>
+</div>
+
+<!-- ===================== Touch controls ===================== -->
+<div id="touch" class="hidden">
+  <div id="joyZone"><div id="joyBase"><div id="joyKnob"></div></div></div>
+  <div id="touchBtns">
+    <button id="btnGrab" class="tbtn">GRAB</button>
+    <button id="btnJump" class="tbtn jump">JUMP</button>
+  </div>
+</div>
+
+<div id="rotateHint" class="hidden">Rotate your device for the best view &#8635;</div>
+
+<!-- Modules (classic scripts, load order matters — works from file://) -->
+<script src="js/physics.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/input.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/levels.js"></script>
+<script src="js/background.js"></script>
+<script src="js/obstacles.js"></script>
+<script src="js/player.js"></script>
+<script src="js/npc.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/game.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
